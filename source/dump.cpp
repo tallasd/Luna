@@ -96,10 +96,9 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	sprintf(dumptime, date_format, dumpcalendartime.day, dumpcalendartime.month, dumpcalendartime.year, dumpcalendartime.hour, dumpcalendartime.minute);
 	
 #if DEBUG
-	* status = dumptime;
+	*status = dumptime;
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 #endif
-
 
 	std::string newdumppath = "/config/luna/dump/" + util::getIslandName(mainAddr) + " " + std::string(dumptime);
 

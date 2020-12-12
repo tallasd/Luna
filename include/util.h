@@ -14,10 +14,13 @@
 
 namespace util
 {
+    std::string safeString(const std::string& s);
+
     //removes char from C++ string
     void stripChar(char _c, std::string& _s);
 
     std::string getIslandName(u64 mainAddr);
+
 
     u64 FollowPointerMain(u64 pointer, ...);
 }

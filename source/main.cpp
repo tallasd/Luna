@@ -2,9 +2,9 @@
 #include <tesla.hpp>    // The Tesla Header
 #include <util.h>
 #include "dump.hpp"
+#include <fcntl.h>		/* for open */
 
 static char ret[100];
-
 
 class GuiDump : public tsl::Gui {
 public:
@@ -131,10 +131,11 @@ private:
 };
 
 enum class CheckResult {
-    Success = 0,
-    WrongBID = 1,
-    WrongTID = 2,
-    NoDream = 3,
+    Success,
+    WrongBID,
+    WrongTID,
+    NoDream,
+    NoTemplate,
 };
 
 struct Check {
@@ -238,9 +239,63 @@ public:
     virtual void onHide() override {}    // Called before overlay wants to change from visible to invisible state
 
     virtual std::unique_ptr<tsl::Gui> loadInitialGui() override {
-        Check cr = Checker();
-        if (cr.check_result == CheckResult::Success) return initially<SelectionGui>();
-        else return initially<GuiError>(cr.elm);
+        
+        bool hasTemplate = false;
+        bool isDecrypted = true;
+        
+        tsl::hlp::doWithSDCardHandle([&hasTemplate, &isDecrypted]{
+            if (access("/config/luna", F_OK) == -1) {
+                mkdir("/config/luna", 0777);
+            }
+            if (access("/config/luna/dump", F_OK) == -1) {
+                mkdir("/config/luna/dump", 0777);
+            }
+            if (access("/config/luna/template", F_OK) == -1) {
+                mkdir("/config/luna/template", 0777);
+                return;
+            }
+            if (access("/config/luna/template/main.dat", F_OK) == -1) {
+                return;
+            }
+            else {
+                int fd = open("/config/luna/template/main.dat", O_RDONLY);
+
+                int size = lseek(fd, 0, SEEK_END);
+                //template for wrong version
+                if (size != MAINFILE_SIZE) return;
+            }
+            //if there is a header, its encrypted, therefore not Decrypted!
+            if (access("/config/luna/template/mainHeader.dat", F_OK) != -1) {
+                isDecrypted = false;
+                return;
+            }
+            if (access("/config/luna/template/Villager0", F_OK) == -1) return;
+
+            hasTemplate = true;
+        });
+
+        if (hasTemplate) {
+            Check cr = Checker();
+            if (cr.check_result == CheckResult::Success) return initially<SelectionGui>();
+            else return initially<GuiError>(cr.elm);
+        }
+        else {
+            if (isDecrypted) {
+                auto warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
+                    renderer->drawString("\uE150", false, 180, 250, 90, renderer->a(0xFFFF));
+                    renderer->drawString("No valid template found.", false, 70, 340, 25, renderer->a(0xFFFF));
+                    });
+                return initially<GuiError>(warning);
+            }
+            else {
+                auto warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
+                    renderer->drawString("\uE150", false, 180, 250, 90, renderer->a(0xFFFF));
+                    renderer->drawString("A template was found,", false, 85, 340, 25, renderer->a(0xFFFF));
+                    renderer->drawString(  "but is encrypted.", false, 125, 375, 25, renderer->a(0xFFFF));
+                    });
+                return initially<GuiError>(warning);
+            }
+        }
     }
 };
 

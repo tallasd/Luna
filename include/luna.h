@@ -3,7 +3,8 @@
 #define LUNA_TEMPLATE_DIR LUNA_DIR "/template/"
 
 #define TID 0x01006F8002326000
-#define BID 0x36EEBA0C26F14216 //1.6.0
+#define BID 0x36EEBA0C26F14216	//1.6.0
+#define MAINFILE_SIZE 11688160	//1.6.0
 
 #define MAJOR_VERSION       0
 #define MINOR_VERSION       0
