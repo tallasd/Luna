@@ -27,3 +27,13 @@ An Animal Crossing New Horizons tool to dump Dream Islands.
     ├── /switch/.overlays/                              # Tesla-Menu Overlay folder.
     │   └── /Luna-ovl.ovl                               # Luna Overlay.
     └── ...
+
+# How-To
+
+1. do the thing (run make)
+2. put stuff on SD card and give 1.6.0 decrypted save as template
+3. run overlay when you're on a dream island
+4. get yo dump
+5. use [HorizonCrypt](https://github.com/Cuyler36/HorizonCrypt) to encrypt yo dump
+6. ???
+7. Profit. 
