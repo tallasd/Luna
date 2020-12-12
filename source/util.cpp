@@ -1,13 +1,42 @@
 #include "util.h"
 
+static const char verboten[] = { ',', '/', '\\', '<', '>', ':', '"', '|', '?', '*', '™', '©', '®' };
+
+static bool isVerboten(const u16& t)
+{
+    for (unsigned i = 0; i < 13; i++)
+    {
+        if (t == verboten[i])
+            return true;
+    }
+
+    return false;
+}
+
+static inline bool isASCII(const u16& t)
+{
+    //0x0200 being the end of island name (would be 0x0002 in ASCII i think, but endianess is how it is)
+    return (t > 31 && t < 127) || t == 0x0200;
+}
+
 
 std::string util::getIslandName(u64 mainAddr)
 {
     //0x16 byte = 0xB wide-chars/uint_16
-    u16 name[0xB];
+    u16 name[0xB] = {};
+    u16 namechar;
     u64 IslandNameOffset = 0x18;
 
-    dmntchtReadCheatProcessMemory(mainAddr + IslandNameOffset, name, 0x16);
+    for (u8 i = 0; i < 0xB; i++) {
+        dmntchtReadCheatProcessMemory(mainAddr + IslandNameOffset + (i * 0x2), &namechar, 0x2);
+        //make sure we can use this fuck string in a path
+        if (isASCII(namechar) && !isVerboten(namechar)) {
+            name[i] = namechar;
+        }
+        else {
+            name[i] = 0x0000;
+        }
+    }
 
     u8 name_string[0x16];
     //pain
