@@ -1,7 +1,7 @@
 # Luna
 An Animal Crossing New Horizons tool to dump Dream Islands.
 
-# SD file structor
+# SD file structure
 
     SDMC
     ├── ...
