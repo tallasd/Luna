@@ -12,8 +12,8 @@
 #include "log.hpp"
 #include "fsfile.h"
 
-//32kb of buffer bc tesla got syssy memory pool //WerWolv said he uses 4kb
-#define BUFF_SIZE 0x8000
+//64kb of buffer bc tesla got syssy memory pool //WerWolv said he uses 4kb
+#define BUFF_SIZE 0x10000
 
 namespace fs
 {
