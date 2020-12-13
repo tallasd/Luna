@@ -35,8 +35,9 @@ An Animal Crossing New Horizons tool to dump Dream Islands.
 3. run overlay when you're on a dream island
 4. get yo dump
 5. use [HorizonCrypt](https://github.com/Cuyler36/HorizonCrypt) to encrypt yo dump
-6. ???
-7. Profit. 
+6. Open and Save the encrypted data with [NHSE](https://github.com/kwsch/NHSE) to fix Hashes etc.
+7. ???
+8. Profit. 
 
 ## Credits
 - **WerWolv** for libtesla and coding help.
