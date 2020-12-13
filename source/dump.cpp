@@ -100,7 +100,7 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 #endif
 
-	std::string newdumppath = "/config/luna/dump/" + util::getIslandName(mainAddr) + " " + std::string(dumptime);
+	std::string newdumppath = "/config/luna/dump/" + util::getIslandNameASCII(mainAddr) + " " + std::string(dumptime);
 
 	*status = "starting dump...";
 	//make dir on SD
@@ -112,7 +112,7 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	*status = "finished copying template";
 	size_t bufferSize = BUFF_SIZE;
 	u8 *buffer = new u8[bufferSize];
-	//opening main
+	//opening main write
 	std::snprintf(pathBuffer, FS_MAX_PATH, std::string(newdumppath + "/main.dat").c_str());
 	rc = fsFsOpenFile(&fsSdmc, pathBuffer, FsOpenMode_Write, &main);
 	if (R_FAILED(rc)) {
@@ -151,11 +151,15 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	*progress = 60;
 	*status = "wrote main.dat";
 
+	//done writing main
+	fsFileClose(&main);
+
 	FsFile landname;
 	//clear our path buffer or bad things will happen
 	memset(pathBuffer, 0, FS_MAX_PATH);
 	std::snprintf(pathBuffer, FS_MAX_PATH, std::string(newdumppath + "/landname.dat").c_str());
-	std::string islandname = util::getIslandName(mainAddr);
+	u16 islandname[0xB];
+	memcpy(islandname, util::getIslandName(mainAddr).name, sizeof(islandname));
 	fsFsOpenFile(&fsSdmc, pathBuffer, FsOpenMode_Write, &landname);
 	fsFileWrite(&landname, 0, &islandname, 0x16, FsWriteOption_Flush);
 	fsFileClose(&landname);
@@ -186,7 +190,6 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 #endif
 		//copy the original villager for the existing villagers
 		if (i != 0) {
-			*status = ("copying template player " + std::to_string(i+1) + "...").c_str();
 			mkdir(currentplayer.c_str(), 0777);
 			fs::copyDirToDir(&fsSdmc, Villager0, currentplayer, logelm);
 			(*logelm)->addLine("finished copying player template Villager" + std::to_string(i) + ".");
@@ -207,7 +210,7 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 			return;
 		}
 
-		*status = ("writing " + player).c_str();
+		*status = "writing player...";
 		for (u64 offset = 0; offset < playerSize; offset += bufferSize) {
 			if (bufferSize > playerSize - offset)
 				bufferSize = playerSize - offset;
@@ -218,14 +221,16 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 		(*logelm)->addLine("wrote player " + std::to_string(i + 1) + ".");
 
 		//applying fix for pocket size
+		*status = "applying fixes to player...";
 		u8 houselvl = 0;
-		u64 bytesread = 0;
 		u16 BuiltTownOffice = 0;
 		//using default sizes
 		u32 storageSize = 80;
 		u32 pocket2Size = 0;
-		fsFileRead(&main, SaveHeaderSize + houseOffset + (i * houseSize), &houselvl, 0x1, FsReadOption_None, &bytesread);
-		fsFileRead(&main, SaveHeaderSize + EventFlagOffset + (59 * 2), &BuiltTownOffice, 0x2, FsReadOption_None, &bytesread);
+
+		dmntchtReadCheatProcessMemory(mainAddr + houseOffset + (i * houseSize), &houselvl, sizeof(u8));
+		dmntchtReadCheatProcessMemory(mainAddr + EventFlagOffset + (59 * 2), &BuiltTownOffice, sizeof(u16));
+
 		switch (houselvl) {
 			//no need to change defaults
 			case 1: break;
@@ -255,10 +260,8 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 		(*logelm)->addLine("applied fixes to player " + std::to_string(i + 1) + ".");
 		*progress += percentageperplayer;
 	}
+
 	//dump succeeded
-	
-	//done readingwriting main
-	fsFileClose(&main);
 
 	*progress = 100;
 	*status = "DONE!";
