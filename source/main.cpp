@@ -30,19 +30,16 @@ public:
         auto frame = new tsl::elm::OverlayFrame("Luna", STRING_VERSION);
 
         this->m_progressBar = new tsl::elm::ProgressBar();
-        u64 loglength = 18;
-        this->m_Log = new tsl::elm::Log(loglength);
+        this->m_Log = new tsl::elm::Log(20);
         auto list = new tsl::elm::List();
 
+        list->addItem(this->m_progressBar);
+        list->addItem(this->m_Log);
 #if !DEBUG
         //assign dump thread our Dumper function
         dump = std::thread([this]() { Dumper(&this->progress, &this->status, &this->m_Log); });
 #endif
 
-        list->addItem(new tsl::elm::CategoryHeader("ProgressBar", true));
-        list->addItem(this->m_progressBar);
-        list->addItem(new tsl::elm::CategoryHeader("Log output", true));
-        list->addItem(this->m_Log);
         frame->setContent(list);
 
         return frame;
@@ -50,8 +47,14 @@ public:
 
     // Called once every frame to update values
     virtual void update() override {
+        this->tem++;
         this->m_progressBar->setProgress(this->progress);
         this->m_progressBar->setStatus(this->status);
+        //should change 4 times a second
+        if (this->tem % 15 == 0) {
+            this->m_progressBar->Spin();
+            this->tem = 0;
+        }
     }
 
     // Called once every frame to handle inputs not handled by other UI elements
@@ -62,9 +65,9 @@ public:
 private:
     tsl::elm::ProgressBar *m_progressBar = nullptr;
     u8 progress = 0;
+    u8 tem = 0;
     const char *status = "preparing...";
     tsl::elm::Log *m_Log = nullptr;
-
 };
 
 class SelectionGui : public tsl::Gui {

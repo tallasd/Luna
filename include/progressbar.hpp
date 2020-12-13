@@ -35,7 +35,7 @@ namespace tsl
                 renderer->drawString(loadingSquares[this->m_change], false, this->getX() + 18, this->getY() + 57, 27, a(tsl::style::color::ColorText));
                 //draw bar
                 u16 handlePos = (this->getWidth() - 95) * static_cast<float>(this->m_progress) / 100;
-                renderer->drawRect(this->getX() + 60, this->getY() + 35, this->getWidth() - 95, 20, a(tsl::style::color::ColorFrame));
+                renderer->drawRect(this->getX() + 60, this->getY() + 35, this->getWidth() - 95, 20, a(tsl::style::color::ColorHandle));
                 renderer->drawRect(this->getX() + 60, this->getY() + 35, handlePos, 20, a(tsl::style::color::ColorHighlight));
 
                 //draw Status
@@ -46,7 +46,7 @@ namespace tsl
             }
 
             virtual void layout(u16 parentX, u16 parentY, u16 parentWidth, u16 parentHeight) override {
-                this->setBoundaries(this->getX(), this->getY(), this->getWidth(), 50);
+                this->setBoundaries(this->getX(), this->getY(), this->getWidth(), 90);
             }
 
             virtual void drawFocusBackground(gfx::Renderer* renderer) {
@@ -106,7 +106,10 @@ namespace tsl
              */
             virtual void setProgress(u8 value) {
                 this->m_progress = value;
-                this->m_change = static_cast<u8>(value) % 8;
+            }
+
+            virtual void Spin() {
+                this->m_change++;
             }
 
         protected:
