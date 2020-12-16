@@ -2,26 +2,28 @@
 #include <tesla.hpp>    // The Tesla Header
 #include <util.h>
 #include "dump.hpp"
+#include "luna.h"
 #include <fcntl.h>		/* for open */
 
 static char ret[100];
+static bool isRunning = false;
+
+//seperate thread that runs after createUI or something
+#if !DEBUG_UI
+std::thread dump;
+#endif
 
 class GuiDump : public tsl::Gui {
 public:
     //ctor
     GuiDump() { }
 
-
-    //seperate thread that runs after createUI or something
-#if !DEBUG
-    std::thread dump;
-#endif
-
     //dtor
     ~GuiDump() {
-#if !DEBUG
+#if !DEBUG_UI
         dump.join();
 #endif
+        isRunning = false;
     }
 
     // Called once when this Gui gets loaded to create the UI
@@ -35,10 +37,11 @@ public:
 
         list->addItem(this->m_progressBar);
         list->addItem(this->m_Log);
-#if !DEBUG
+#if !DEBUG_UI
         //assign dump thread our Dumper function
         dump = std::thread([this]() { Dumper(&this->progress, &this->status, &this->m_Log); });
 #endif
+        isRunning = true;
 
         frame->setContent(list);
 
@@ -47,13 +50,16 @@ public:
 
     // Called once every frame to update values
     virtual void update() override {
-        this->tem++;
-        this->m_progressBar->setProgress(this->progress);
-        this->m_progressBar->setStatus(this->status);
-        //should change 4 times a second
-        if (this->tem % 15 == 0) {
-            this->m_progressBar->Spin();
-            this->tem = 0;
+
+        if (isRunning) {
+            this->tem++;
+            this->m_progressBar->setProgress(this->progress);
+            this->m_progressBar->setStatus(this->status);
+            //should change 4 times a second
+            if (this->tem % 15 == 0) {
+                this->m_progressBar->Spin();
+                this->tem = 0;
+            }
         }
     }
 
@@ -188,7 +194,7 @@ Check Checker() {
         }
         else {
 //if debug is enabled, dont perform dream check
-#if !DEBUG
+#if !DEBUG_UI
             if (dreamstrval == 0x0) {
                 warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
                     renderer->drawString("\uE008", false, 180, 250, 90, renderer->a(0xFFFF));
@@ -205,7 +211,7 @@ Check Checker() {
         }
     }
     else {
-#if DEBUG
+#if DEBUG_UI
         std::snprintf(ret, 100, "TID 0x%lX", tid);
         const char* description = ret;
 #else
@@ -238,8 +244,10 @@ public:
         timeExit();
     }  // Called at the end to clean up all services previously initialized
 
-    virtual void onShow() override {}    // Called before overlay wants to change from invisible to visible state
-    virtual void onHide() override {}    // Called before overlay wants to change from visible to invisible state
+    // Called before overlay wants to change from invisible to visible state
+    virtual void onShow() override {}
+    // Called before overlay wants to change from visible to invisible state
+    virtual void onHide() override {}
 
     virtual std::unique_ptr<tsl::Gui> loadInitialGui() override {
         

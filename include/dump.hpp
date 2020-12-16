@@ -9,7 +9,5 @@
 #include <sys/stat.h>
 #include "file.h"		//read and write stuff
 
-#define DEBUG 0
-
 
 void Dumper(u8 *progress, const char **status, tsl::elm::Log** logelm);

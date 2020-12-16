@@ -9,7 +9,6 @@
 #include <sys/stat.h>
 #include "file.h"
 #include "util.h"
-#include "luna.h"
 
 typedef struct
 {
@@ -27,6 +26,8 @@ static std::string wd;
 static std::vector<std::string> pathFilter;
 
 static char pathbuff[FS_MAX_PATH];
+
+Result fsres;
 
 static struct
 {
@@ -198,21 +199,36 @@ void fs::copyFile(FsFileSystem *fs, const std::string& from, const std::string& 
     FsFile out;
     //from file
     std::snprintf(pathbuff, FS_MAX_PATH, from.c_str());
-    ASSERT_FATAL(fsFsOpenFile(fs, pathbuff, FsOpenMode_Read, &in));
+#if DEBUG_FS
+    fsres = fsFsOpenFile(fs, pathbuff, FsOpenMode_Read, &in);
+    char txt[sizeof(Result)];
+    snprintf(txt, sizeof(Result), "%u", fsres);
+    (*logelm)->addLine(txt);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+#else
+    fsFsOpenFile(fs, pathbuff, FsOpenMode_Read, &in);
+#endif
 
     u64 readIn = BUFF_SIZE;
     u64 off = 0;
     s64 fsize = 0;
     u64 bytesread = 0;
-    ASSERT_FATAL(fsFileGetSize(&in, &fsize));
+
+    fsFileGetSize(&in, &fsize);
     //clear our path buffer or bad things will happen
     memset(pathbuff, 0, FS_MAX_PATH);
     //to file
     std::snprintf(pathbuff, FS_MAX_PATH, to.c_str());
     fsFsDeleteFile(fs, pathbuff);
     fsFsCreateFile(fs, pathbuff, fsize, 0);
-    ASSERT_FATAL(fsFsOpenFile(fs, pathbuff, FsOpenMode_Write, &out));
-    
+#if DEBUG_FS
+    fsres = fsFsOpenFile(fs, pathbuff, FsOpenMode_Write, &out);
+    snprintf(txt, sizeof(Result), "%u", fsres);
+    (*logelm)->addLine(txt);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+#else
+    fsFsOpenFile(fs, pathbuff, FsOpenMode_Write, &out);
+#endif
 
     for (off = 0; off < (u64)fsize; off += readIn) {
         if (readIn > (u64)fsize - off)

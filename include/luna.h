@@ -12,3 +12,7 @@
 #define STRINGIFY(x)        #x
 #define TOSTRING(x)         STRINGIFY(x)
 #define STRING_VERSION      "" TOSTRING(MAJOR_VERSION) "." TOSTRING(MINOR_VERSION) "." TOSTRING(REVISION_VERSION) ""
+
+#define DEBUG				0
+#define DEBUG_UI			0
+#define DEBUG_FS			0

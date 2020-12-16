@@ -79,7 +79,6 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	if (R_FAILED(rc)) {
 		*progress = 0;
 		*status = "Error: opening SD Card";
-		fsFsClose(&fsSdmc);
 		fsdevUnmountDevice("sdmc");
 		return;
 	}
@@ -101,6 +100,7 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 #endif
 
 	std::string newdumppath = "/config/luna/dump/" + util::getIslandNameASCII(mainAddr) + " " + std::string(dumptime);
+
 
 	*status = "starting dump...";
 	//make dir on SD

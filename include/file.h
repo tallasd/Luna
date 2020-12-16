@@ -1,5 +1,6 @@
 #ifndef FILE_H
 #define FILE_H
+#pragma once
 
 #include <string>
 #include <cstdio>
@@ -8,6 +9,8 @@
 #include <dirent.h>
 #include <minizip/zip.h>
 #include <minizip/unzip.h>
+
+#include "luna.h"
 
 #include "log.hpp"
 #include "fsfile.h"
