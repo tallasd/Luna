@@ -101,7 +101,6 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 
 	std::string newdumppath = "/config/luna/dump/" + util::getIslandNameASCII(mainAddr) + " " + std::string(dumptime);
 
-
 	*status = "starting dump...";
 	//make dir on SD
 	mkdir(newdumppath.c_str(), 0777);
