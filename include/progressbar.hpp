@@ -32,7 +32,10 @@ namespace tsl
 
             virtual void draw(gfx::Renderer* renderer) override {
                 //draw the icon
-                renderer->drawString(loadingSquares[this->m_change], false, this->getX() + 18, this->getY() + 57, 27, a(tsl::style::color::ColorText));
+                if(this->m_progress != 100)
+                    renderer->drawString(loadingSquares[this->m_change], false, this->getX() + 18, this->getY() + 57, 27, a(tsl::style::color::ColorText));
+                //draw a heart when we are done.
+                else renderer->drawString("\uE017", false, this->getX() + 18, this->getY() + 55, 27, a(tsl::style::color::ColorText));
                 //draw bar
                 u16 handlePos = (this->getWidth() - 95) * static_cast<float>(this->m_progress) / 100;
                 renderer->drawRect(this->getX() + 60, this->getY() + 35, this->getWidth() - 95, 20, a(tsl::style::color::ColorHandle));
@@ -109,7 +112,9 @@ namespace tsl
             }
 
             virtual void Spin() {
-                this->m_change++;
+                if (this->m_change + 1 == 8)
+                    this->m_change = 0;
+                else this->m_change++;
             }
 
         protected:
