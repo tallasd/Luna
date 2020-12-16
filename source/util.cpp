@@ -15,14 +15,15 @@ static bool isVerboten(const u16& t)
 
 static inline bool isASCII(const u16& t)
 {
-    return (t > 31 && t < 127);
+    //0x0200 being the end of island name (would be 0x0002 in ASCII i think, but endianess is how it is)
+    return (t > 31 && t < 127) || t == 0x0200;
 }
 
 
 std::string util::getIslandNameASCII(u64 mainAddr)
 {
     //0x16 byte = 0xB wide-chars/uint_16
-    u16 name[0xB] = { 0 };
+    u16 name[0xB] = {};
     u16 namechar;
     u64 IslandNameOffset = 0x18;
 
@@ -32,14 +33,13 @@ std::string util::getIslandNameASCII(u64 mainAddr)
         if (isASCII(namechar) && !isVerboten(namechar)) {
             name[i] = namechar;
         }
-        //invalid chars get replaced and will not be encoded
         else {
             name[i] = 0x0000;
         }
     }
-    //nullterminator pain
-    u8 name_string[0x16] = { 0 };
-    //utf pain
+
+    u8 name_string[0x16];
+    //pain
     utf16_to_utf8(name_string, name, sizeof(name_string) / sizeof(u8));
 
     return std::string((char*)name_string);
