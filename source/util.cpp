@@ -45,6 +45,31 @@ std::string util::getIslandNameASCII(u64 mainAddr)
 }
 
 
+std::string util::getDreamAddrString(u64 mainAddr)
+{
+    u64 cDreamID = 0x0;
+    char buffer[0x10] = { 0 };
+    u64 DreamIDOffs = 0x504DF0 - 0x110;
+
+    dmntchtReadCheatProcessMemory(mainAddr + DreamIDOffs, &cDreamID, sizeof(u64));
+    sprintf(buffer, "%li", cDreamID);
+
+    std::string str1 = std::string(buffer).substr(0, 4);
+    std::string str2 = std::string(buffer).substr(4, 4);
+    std::string str3 = std::string(buffer).substr(8, 4);
+
+    return std::string(str1 + "-" + str2 + "-" + str3);
+}
+
+TimeCalendarTime util::getDreamTime(u64 mainAddr)
+{
+    TimeCalendarTime dreamtime;
+    u64 DreamTimeOffs = 0x504E30 - 0x110;
+    dmntchtReadCheatProcessMemory(mainAddr + DreamTimeOffs, &dreamtime, sizeof(TimeCalendarTime));
+    return dreamtime;
+}
+
+
 IslandName util::getIslandName(u64 mainAddr)
 {
     //0x16 byte = 0xB wide-chars/uint_16

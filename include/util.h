@@ -25,8 +25,11 @@ namespace util
 
     std::string getIslandNameASCII(u64 mainAddr);
 
-    IslandName getIslandName(u64 mainAddr);
+    std::string getDreamAddrString(u64 mainAddr);
 
+    TimeCalendarTime getDreamTime(u64 mainAddr);
+
+    IslandName getIslandName(u64 mainAddr);
 
     u64 FollowPointerMain(u64 pointer, ...);
 

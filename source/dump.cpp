@@ -85,24 +85,29 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	FsFile main;
 	FsFile personal;
 
-	u64 dumptimestamp;
-	TimeCalendarTime dumpcalendartime;
-	TimeCalendarAdditionalInfo dumptimeinfo;
-	timeGetCurrentTime(TimeType_UserSystemClock, &dumptimestamp);
-	timeToCalendarTimeWithMyRule(dumptimestamp, &dumpcalendartime, &dumptimeinfo);
-	char dumptime[128];
-	const char *date_format = "%02d.%02d.%04d @ %02d-%02d";
-	sprintf(dumptime, date_format, dumpcalendartime.day, dumpcalendartime.month, dumpcalendartime.year, dumpcalendartime.hour, dumpcalendartime.minute);
+	TimeCalendarTime dumpdreamtime = util::getDreamTime(mainAddr);
+	char dreamtime[128];
+	const char* date_format = "%02d.%02d.%04d @ %02d-%02d";
+	sprintf(dreamtime, date_format, dumpdreamtime.day, dumpdreamtime.month, dumpdreamtime.year, dumpdreamtime.hour, dumpdreamtime.minute);
 	
+	(*logelm)->addLine("Dream Time: " + std::string(dreamtime));
+
+	(*logelm)->addLine("DA-" + util::getDreamAddrString(mainAddr));
+
 #if DEBUG
 	*status = dumptime;
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 #endif
 
-	std::string newdumppath = "/config/luna/dump/" + util::getIslandNameASCII(mainAddr) + " " + std::string(dumptime);
+	std::string newdumppath = "/config/luna/dump/[DA-" + util::getDreamAddrString(mainAddr) + "] " + util::getIslandNameASCII(mainAddr);
 
 	*status = "starting dump...";
 	//make dir on SD
+	if (access(newdumppath.c_str(), F_OK) == -1) {
+		mkdir(newdumppath.c_str(), 0777);
+	}
+	//assuming that the dumptime never is the same (unless we got a cheating pig, oink oink), this should always be a new directory.
+	newdumppath += "/" + std::string(dreamtime);
 	mkdir(newdumppath.c_str(), 0777);
 	//copy template to new directory recursively
 	fs::copyDirToDir(&fsSdmc, "/config/luna/template/", newdumppath + "/", logelm);
