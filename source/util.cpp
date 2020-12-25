@@ -52,7 +52,7 @@ std::string util::getDreamAddrString(u64 mainAddr)
     u64 DreamIDOffs = 0x504DF0 - 0x110;
 
     dmntchtReadCheatProcessMemory(mainAddr + DreamIDOffs, &cDreamID, sizeof(u64));
-    sprintf(buffer, "%li", cDreamID);
+    sprintf(buffer, "%012li", cDreamID);
 
     std::string str1 = std::string(buffer).substr(0, 4);
     std::string str2 = std::string(buffer).substr(4, 4);
