@@ -15,12 +15,6 @@
 static char pathBuffer[FS_MAX_PATH] = { 0 };
 Result rc;
 
-tsl::elm::CustomDrawer *createLogElement(const char *text, u16 size) {
-	auto logtext = new tsl::elm::CustomDrawer([text, size](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
-		renderer->drawString(text, false, x + 20, y, size, renderer->a(0xFF0F)); });
-	return logtext;
-}
-
 /**
  * @brief Dumps dream town
  *
@@ -46,6 +40,8 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 		return;
 	}
 	u64 mainSize = 0x5061A0;
+	u64 GSavePlayerVillagerAccountOffset = 0x1E2280 - 0x110;
+	u64 GSavePlayerVillagerAccountSize = 0x48;
 	u64 playerSize = 0x36930;
 	u64 playersOffset = 0x7A8C8;
 	//taken from NHSE
@@ -66,10 +62,10 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	*status = "checking players...";
 	//check existing players
 	for (u8 i = 0; i < 8; i++) {
-		u64 offset = i * playersOffset;
-		u32 playerID = 0;
-		dmntchtReadCheatProcessMemory(playerAddr + offset, &playerID, 0x4);
-		if (playerID != 0) players[i] = true;
+		u64 offset = i * GSavePlayerVillagerAccountSize;
+		u128 AccountUID = 0;
+		dmntchtReadCheatProcessMemory(mainAddr + GSavePlayerVillagerAccountOffset + offset, &AccountUID, 0x10);
+		if (AccountUID != 0) players[i] = true;
 	}
 	*status = "players checked";
 	//time for fun
