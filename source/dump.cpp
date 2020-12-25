@@ -12,7 +12,7 @@
 //    NotInitialized = 7,
 //};
 
-static char pathBuffer[FS_MAX_PATH];
+static char pathBuffer[FS_MAX_PATH] = { 0 };
 Result rc;
 
 tsl::elm::CustomDrawer *createLogElement(const char *text, u16 size) {
@@ -99,14 +99,15 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 #endif
 
-	std::string newdumppath = "/config/luna/dump/[DA-" + util::getDreamAddrString(mainAddr) + "] " + util::getIslandNameASCII(mainAddr);
+	std::string newdumppath = "/config/luna/dump/[DA-" + util::getDreamAddrString(mainAddr) + "]";
+	std::string strislandname = util::getIslandNameASCII(mainAddr);
+	if (!strislandname.empty()) newdumppath += " " + strislandname;
 
 	*status = "starting dump...";
 	//make dir on SD
 	if (access(newdumppath.c_str(), F_OK) == -1) {
 		mkdir(newdumppath.c_str(), 0777);
 	}
-	//assuming that the dumptime never is the same (unless we got a cheating pig, oink oink), this should always be a new directory.
 	newdumppath += "/" + std::string(dreamtime);
 	mkdir(newdumppath.c_str(), 0777);
 	//copy template to new directory recursively
@@ -116,6 +117,8 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	*status = "finished copying template";
 	size_t bufferSize = BUFF_SIZE;
 	u8 *buffer = new u8[bufferSize];
+	//clear our path buffer or bad things will happen
+	memset(pathBuffer, 0, FS_MAX_PATH);
 	//opening main write
 	std::snprintf(pathBuffer, FS_MAX_PATH, std::string(newdumppath + "/main.dat").c_str());
 	rc = fsFsOpenFile(&fsSdmc, pathBuffer, FsOpenMode_Write, &main);
@@ -254,8 +257,10 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 					break;
 		}
 		//those are just assumptions; the pocket upgrades are available at those points tho, so most people got them
-		if (houselvl > 0x1) pocket2Size += 0xA;
-		if (BuiltTownOffice == 0x1) pocket2Size += 0xA;
+		if (houselvl > 0x1) {
+			pocket2Size += 0xA;
+			if (BuiltTownOffice == 0x1) pocket2Size += 0xA;
+		}
 
 		fsFileWrite(&personal, StorageSizeOffset, &storageSize, sizeof(u32), FsWriteOption_Flush);
 		fsFileWrite(&personal, Pocket2SizeOffset, &pocket2Size, sizeof(u32), FsWriteOption_Flush);
