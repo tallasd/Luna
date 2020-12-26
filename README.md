@@ -44,7 +44,7 @@ If you like my work, please consider supporting me on Patreon, thanks!
 2. put everything on the SD card and provide 1.6.0 decrypted save as template.
 3. run overlay when you're on a dream island.
 4. grab the dump from your SD card.
-5. use [HorizonCrypt](https://github.com/Cuyler36/HorizonCrypt) to encrypt dump.
+5. use [HorizonCrypt](https://github.com/Ixaruz/HorizonCrypt) to encrypt dump.
 6. Open and Save the encrypted data with [NHSE](https://github.com/kwsch/NHSE) to fix Hashes etc.
 7. ???
 8. Profit. 
