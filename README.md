@@ -50,4 +50,3 @@ An Animal Crossing New Horizons tool to dump Dream Islands.
 ## Credits
 - **WerWolv** for libtesla and coding help.
 - **J-D-K** for JKSV, which was used for testing and also part of its code was used for file handling.
-- **my Mum** for not being gay and making love with a weirdo to get a weirdo kid like me.
