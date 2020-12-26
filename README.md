@@ -7,7 +7,7 @@ An Animal Crossing New Horizons tool to dump Dream Islands.
     ├── ...
     ├── /config/luna/                                   # config folder for Luna.
     │   ├── /dump/                                      # folder for dumps.
-    │   │   ├── /[DREAM_ADDRESS]TownName/               # dump folder format. Example: "/[DA-XXXX-XXXX-XXXX] MyTown
+    │   │   ├── /[DREAM_ADDRESS] TownName/              # dump folder format. Example: "/[DA-XXXX-XXXX-XXXX] MyTown
     │   │   │   ├──/Date @ Time (in dream)/             #                               /12.12.2020 @ 4.20/"
     │   │   │   │   ├── /VillagerX/                     # variable amount of players,  0 <= X < 8
     │   │   │   │   │   ├── /personal.dat
@@ -40,6 +40,12 @@ An Animal Crossing New Horizons tool to dump Dream Islands.
 6. Open and Save the encrypted data with [NHSE](https://github.com/kwsch/NHSE) to fix Hashes etc.
 7. ???
 8. Profit. 
+
+## Known Issues
+
+- non-ASCII island names can't be saved (e.g. Japanese/Chinese/Korean/Russian, basically every language that doesnt use the roman alphabet.)
+  this is due to Nintendo Switch handling file paths in Shift JIS (basically utf8), which doesn't include non-ASCII characters.
+  I wont be able to fix this. Currently Luna just doesn't include the island name in the path, if its invalid, you can still dump foreign islands, duh.
 
 ## Credits
 - **WerWolv** for libtesla and coding help.
