@@ -1,6 +1,14 @@
 # Luna
 An Animal Crossing New Horizons tool to dump Dream Islands.
 
+## Supporting
+
+If you like my work, please consider supporting me on Patreon, thanks!
+
+<p align="center">
+<a href="https://www.patreon.com/Ixarus"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Patreon donate button" /> </a>
+</p>
+
 ## SD file structure
 
     SDMC
