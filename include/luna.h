@@ -8,7 +8,7 @@
 
 #define MAJOR_VERSION       0
 #define MINOR_VERSION       0
-#define REVISION_VERSION    4
+#define REVISION_VERSION    5
 #define STRINGIFY(x)        #x
 #define TOSTRING(x)         STRINGIFY(x)
 #define STRING_VERSION      "" TOSTRING(MAJOR_VERSION) "." TOSTRING(MINOR_VERSION) "." TOSTRING(REVISION_VERSION) ""

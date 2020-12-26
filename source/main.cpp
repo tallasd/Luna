@@ -172,10 +172,13 @@ Check Checker() {
 
     //dream check
     u32 dreamstrval;
+    u16 IsDreamingBed = 0;
     u64 IslandNameOffset = 0x18;
+    u64 EventFlagOffset = 0x20C40C;
     //[[[main+3C957B0]+10]+F8]+60
     u64 mainAddr = util::FollowPointerMain(0x3C957B0, 0x10, 0xF8, 0xFFFFFFFFFFFFFFFF) + 0x60;
     dmntchtReadCheatProcessMemory(mainAddr + IslandNameOffset, &dreamstrval, sizeof(u32));
+    dmntchtReadCheatProcessMemory(mainAddr + EventFlagOffset + (346 * 2), &IsDreamingBed, sizeof(u16));
 
     if (isACNH) {
         if (bid != BID) {
@@ -195,7 +198,8 @@ Check Checker() {
         else {
 //if debug is enabled, dont perform dream check
 #if !DEBUG_UI
-            if (dreamstrval == 0x0) {
+            //if there is a town and is in dream
+            if (dreamstrval == 0x0 || IsDreamingBed == 0x0) {
                 warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
                     renderer->drawString("\uE008", false, 180, 250, 90, renderer->a(0xFFFF));
                     renderer->drawString("you didnt pass", false, x + 95, 340, 25, renderer->a(0xFFFF));
