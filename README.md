@@ -57,3 +57,4 @@ If you like my work, please consider supporting me on Patreon, thanks!
 ## Credits
 - **WerWolv** for libtesla and coding help.
 - **J-D-K** for JKSV, which was used for testing and also part of its code was used for file handling.
+- [**WalteeWartooth**](https://www.reddit.com/user/WalteeWartooth/) for testing Luna and allowing me to dump their island for research!
