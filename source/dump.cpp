@@ -113,8 +113,6 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	*status = "finished copying template";
 	size_t bufferSize = BUFF_SIZE;
 	u8 *buffer = new u8[bufferSize];
-	//clear our path buffer or bad things will happen
-	memset(pathBuffer, 0, FS_MAX_PATH);
 	//opening main write
 	std::snprintf(pathBuffer, FS_MAX_PATH, std::string(newdumppath + "/main.dat").c_str());
 	rc = fsFsOpenFile(&fsSdmc, pathBuffer, FsOpenMode_Write, &main);
