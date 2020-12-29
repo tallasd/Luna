@@ -351,6 +351,11 @@ void fs::delDir(const std::string& path)
     rmdir(path.c_str());
 }
 
+void fs::addPathFilter(const std::string& _path)
+{
+    pathFilter.push_back(_path);
+}
+
 void fs::loadPathFilters(const std::string& _file)
 {
     if(fs::fileExists(_file))

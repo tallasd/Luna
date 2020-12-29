@@ -18,6 +18,7 @@
 //128kb of buffer bc tesla got syssy memory pool //WerWolv said he uses 4kb
 #define BUFF_SIZE 0x20000
 
+
 namespace fs
 {
     void copyFile(FsFileSystem *fs, const std::string &from, const std::string &to, tsl::elm::Log  **logelm);
@@ -38,6 +39,7 @@ namespace fs
     void delDir(const std::string& path);
 
     //Loads paths to filter from backup/deletion
+    void addPathFilter(const std::string& _path);
     void loadPathFilters(const std::string& _file);
     bool pathIsFiltered(const std::string& _path);
     void freePathFilters();

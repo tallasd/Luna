@@ -41,20 +41,24 @@ If you like my work, please consider supporting me on Patreon, thanks!
 ## How-To
 
 1. do the thing (run make) or grab a [release](https://github.com/Ixaruz/Luna-ovl/releases/latest).
-2. put everything on the SD card and provide 1.6.0 decrypted save as template.
+2. put everything on the SD card and provide 1.6.0 [**DECRYPTED**](https://github.com/Ixaruz/HorizonCrypt/releases/latest) save as template.
 3. run overlay when you're on a dream island.
 4. grab the dump from your SD card.
-5. use [HorizonCrypt](https://github.com/Ixaruz/HorizonCrypt/releases/latest) to encrypt dump and fix file hashes.
+5. [**ENCRYPT**](https://github.com/Ixaruz/HorizonCrypt/releases/latest) dump and fix file hashes.
 7. ???
 8. Profit. 
 
 ## Known Issues
 
-- non-ASCII island names can't be saved (e.g. Japanese/Chinese/Korean/Russian, basically every language that doesnt use the roman alphabet.)
+- Non-ASCII island names can't be saved (e.g. Japanese/Chinese/Korean/Russian, basically every language that doesnt use the roman alphabet.)
   this is due to Nintendo Switch handling file paths in Shift JIS (basically utf8), which doesn't include non-ASCII characters.
   I wont be able to fix this. Currently Luna just doesn't include the island name in the path, if its invalid, you can still dump foreign islands, duh.
+
+- If you want to go online with dumped dream towns and avoid error 2219-3003 ("Network temporarily unavailable"),
+  use your own Island as a template (it should provide proper Netplay information).
 
 ## Credits
 - **WerWolv** for libtesla and coding help.
 - **J-D-K** for JKSV, which was used for testing and also part of its code was used for file handling.
 - [**WalteeWartooth**](https://www.reddit.com/user/WalteeWartooth/) for testing Luna and allowing me to dump their island for research!
+- [**rabbit_ruby**](https://www.reddit.com/user/rabbit_ruby/) for testing Luna and also breaking my (weak) Revision checker!

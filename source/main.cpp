@@ -3,10 +3,19 @@
 #include <util.h>
 #include "dump.hpp"
 #include "luna.h"
-#include <fcntl.h>		/* for open */
 
 static char ret[100];
 static bool isRunning = false;
+static bool checkedFiles = false;
+
+typedef struct {
+    /* 0x00 */ u32 Major;
+    /* 0x04 */ u32 Minor;
+    /* 0x08 */ u16 Unk1;
+    /* 0x0A */ u16 HeaderRevision;
+    /* 0x0C */ u16 Unk2;
+    /* 0x0E */ u16 SaveRevision;
+} FileHeaderInfo;
 
 //seperate thread that runs after createUI or something
 #if !DEBUG_UI
@@ -145,12 +154,59 @@ enum class CheckResult {
     WrongTID,
     NoDream,
     NoTemplate,
+    WrongRevision,
 };
 
 struct Check {
     CheckResult check_result;
     tsl::elm::Element* elm;
 };
+
+CheckResult CheckTemplateFiles(FsFileSystem* fs, const std::string& path) {
+    FsFile check;
+    FileHeaderInfo checkDAT = { 0 };
+    u64 bytesread;
+
+    fs::dirList list(path);
+    unsigned listcount = list.getCount();
+
+    if (listcount == 0) {
+        return CheckResult::NoTemplate;
+    }
+    for (unsigned i = 0; i < listcount; i++)
+    {
+        if (fs::pathIsFiltered(path + list.getItem(i)))
+            continue;
+
+        //skip over landname.dat
+        if (list.getItem(i) == "landname.dat")
+            continue;
+
+        if (list.isDir(i))
+        {
+            std::string tobechecked = path + list.getItem(i) + "/";
+            CheckResult chkres = CheckTemplateFiles(fs, tobechecked);
+            if (chkres != CheckResult::Success) {
+                return chkres;
+            }
+
+        }
+        else
+        {
+            char pathbuffer[FS_MAX_PATH];
+            memset(pathbuffer, 0, FS_MAX_PATH);
+            std::string tobechecked = path + list.getItem(i);
+            std::snprintf(pathbuffer, FS_MAX_PATH, tobechecked.c_str());
+            fsFsOpenFile(fs, pathbuffer, FsOpenMode_Read, &check);
+            fsFileRead(&check, 0, &checkDAT, 0x10, FsReadOption_None, &bytesread);
+            if (checkDAT.SaveRevision != REVISION_SAVE || checkDAT.Major != REVISION_MAJOR || checkDAT.Minor != REVISION_MINOR) {
+                fatalThrow(checkDAT.Major);
+                return CheckResult::WrongRevision;
+            }
+        }
+    }
+    return CheckResult::Success;
+}
 
 Check Checker() {
     Check checkvar;
@@ -182,6 +238,7 @@ Check Checker() {
 
     if (isACNH) {
         if (bid != BID) {
+
             std::snprintf(ret, 100, "BID 0x%lX", bid);
             const char* description = ret;
 
@@ -195,7 +252,49 @@ Check Checker() {
             checkvar.elm = warning;
             return checkvar;
         }
+#if DEBUG_FC
         else {
+            if (!checkedFiles) {
+                FsFileSystem fsSdmc;
+                fsdevMountSdmc();
+                fsOpenSdCardFileSystem(&fsSdmc);
+
+                for (u8 i = 1; i < 8; i++) {
+                    fs::addPathFilter("/config/luna/template/Villager" + std::to_string(i));
+                }
+                CheckResult templatefiles = CheckTemplateFiles(&fsSdmc, LUNA_TEMPLATE_DIR);
+                fs::freePathFilters();
+
+                if (templatefiles != CheckResult::Success) {
+                    if (templatefiles == CheckResult::NoTemplate) {
+                        warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
+                            renderer->drawString("\uE150", false, 180, 250, 90, renderer->a(0xFFFF));
+                            renderer->drawString("No valid template found.", false, 70, 340, 25, renderer->a(0xFFFF));
+                            });
+
+                        checkvar.check_result = templatefiles;
+                        checkvar.elm = warning;
+                        fsFsClose(&fsSdmc);
+                        fsdevUnmountDevice("sdmc");
+                        return checkvar;
+                    }
+                    else if (templatefiles == CheckResult::WrongRevision) {
+                        warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
+                            renderer->drawString("\uE150", false, 180, 250, 90, renderer->a(0xFFFF));
+                            renderer->drawString("Either wrong save revision,", false, 60, 340, 25, renderer->a(0xFFFF));
+                            renderer->drawString("or template is encrypted.", false, 65, 375, 25, renderer->a(0xFFFF));
+                            });
+
+                        checkvar.check_result = templatefiles;
+                        checkvar.elm = warning;
+                        fsFsClose(&fsSdmc);
+                        fsdevUnmountDevice("sdmc");
+                        return checkvar;
+                    }
+                }
+                else checkedFiles = true;
+            }
+#endif
 //if debug is enabled, dont perform dream check
 #if !DEBUG_UI
             //if there is a town and is in dream
@@ -255,10 +354,8 @@ public:
 
     virtual std::unique_ptr<tsl::Gui> loadInitialGui() override {
         
-        bool hasTemplate = false;
-        bool isDecrypted = true;
-        
-        tsl::hlp::doWithSDCardHandle([&hasTemplate, &isDecrypted]{
+        //create file struct if not found
+        tsl::hlp::doWithSDCardHandle([]{
             if (access("/config/luna", F_OK) == -1) {
                 mkdir("/config/luna", 0777);
             }
@@ -269,48 +366,11 @@ public:
                 mkdir("/config/luna/template", 0777);
                 return;
             }
-            if (access("/config/luna/template/main.dat", F_OK) == -1) {
-                return;
-            }
-            else {
-                int fd = open("/config/luna/template/main.dat", O_RDONLY);
-
-                int size = lseek(fd, 0, SEEK_END);
-                //template for wrong version
-                if (size != MAINFILE_SIZE) return;
-            }
-            //if there is a header, its encrypted, therefore not Decrypted!
-            if (access("/config/luna/template/mainHeader.dat", F_OK) != -1) {
-                isDecrypted = false;
-                return;
-            }
-            if (access("/config/luna/template/Villager0", F_OK) == -1) return;
-
-            hasTemplate = true;
         });
 
-        if (hasTemplate) {
-            Check cr = Checker();
-            if (cr.check_result == CheckResult::Success) return initially<SelectionGui>();
-            else return initially<GuiError>(cr.elm);
-        }
-        else {
-            if (isDecrypted) {
-                auto warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
-                    renderer->drawString("\uE150", false, 180, 250, 90, renderer->a(0xFFFF));
-                    renderer->drawString("No valid template found.", false, 70, 340, 25, renderer->a(0xFFFF));
-                    });
-                return initially<GuiError>(warning);
-            }
-            else {
-                auto warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
-                    renderer->drawString("\uE150", false, 180, 250, 90, renderer->a(0xFFFF));
-                    renderer->drawString("A template was found,", false, 85, 340, 25, renderer->a(0xFFFF));
-                    renderer->drawString(  "but is encrypted.", false, 125, 375, 25, renderer->a(0xFFFF));
-                    });
-                return initially<GuiError>(warning);
-            }
-        }
+        Check cr = Checker();
+        if (cr.check_result == CheckResult::Success) return initially<SelectionGui>();
+        else return initially<GuiError>(cr.elm);
     }
 };
 

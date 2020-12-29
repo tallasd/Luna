@@ -106,8 +106,12 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	}
 	newdumppath += "/" + std::string(dreamtime);
 	mkdir(newdumppath.c_str(), 0777);
+	for (u8 i = 1; i < 8; i++) {
+		fs::addPathFilter("/config/luna/template/Villager" + std::to_string(i));
+	}
 	//copy template to new directory recursively
 	fs::copyDirToDir(&fsSdmc, "/config/luna/template/", newdumppath + "/", logelm);
+	fs::freePathFilters();
 	(*logelm)->addLine("copied template.");
 	*progress = 40;
 	*status = "finished copying template";
@@ -161,6 +165,9 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	std::snprintf(pathBuffer, FS_MAX_PATH, std::string(newdumppath + "/landname.dat").c_str());
 	u16 islandname[0xB];
 	memcpy(islandname, util::getIslandName(mainAddr).name, sizeof(islandname));
+	//in case user doesn't submit a valid landname.dat file or the file at all
+	fsFsDeleteFile(&fsSdmc, pathBuffer);
+	fsFsCreateFile(&fsSdmc, pathBuffer, 0xB * sizeof(u16), 0);
 	fsFsOpenFile(&fsSdmc, pathBuffer, FsOpenMode_Write, &landname);
 	fsFileWrite(&landname, 0, &islandname, 0x16, FsWriteOption_Flush);
 	fsFileClose(&landname);
