@@ -147,9 +147,15 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	}
 	u16 IsDreamingBed = 0;
 	u16 TapDreamEnable = 1;
+	u16 DreamUploadPlayerHaveCreatorID = 0;
 
+	//removes the dream bed and gyroid on Plaza
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (346 * 2), &IsDreamingBed, sizeof(u16), FsWriteOption_Flush);
+	//should allow you to dream without introduction to it etc
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (354 * 2), &TapDreamEnable, sizeof(u16), FsWriteOption_Flush);
+	//removes panel
+	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (364 * 2), &DreamUploadPlayerHaveCreatorID, sizeof(u16), FsWriteOption_Flush);
+
 
 	(*logelm)->addLine("applied fixes to main.");
 
