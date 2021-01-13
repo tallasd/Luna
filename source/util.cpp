@@ -1,5 +1,21 @@
 #include "util.h"
 
+extern const s64 SaveHeaderSize = 0x110;
+
+extern const u64 mainSize = 0x5061A0;
+extern const u64 GSavePlayerVillagerAccountOffset = 0x1E2280 - 0x110;
+extern const u64 GSavePlayerVillagerAccountSize = 0x48;
+extern const u64 playerSize = 0x36930;
+extern const u64 playersOffset = 0x7A8C8;
+
+//taken from NHSE
+extern const u64 PersonalID = 0xAFA8;
+extern const u64 houseSize = 0x26400;
+extern const u64 houseOffset = 0x2E7638;
+extern const u64 EventFlagOffset = 0x20C40C;
+extern const u64 StorageSizeOffset = 0x4081C;
+extern const u64 Pocket2SizeOffset = 0x36B00;
+
 static const char verboten[] = { ',', '/', '\\', '<', '>', ':', '"', '|', '?', '*', '™', '©', '®' };
 
 static bool isVerboten(const u16& t)
@@ -19,15 +35,14 @@ static inline bool isASCII(const u16& t)
 }
 
 
-std::string util::getIslandNameASCII(u64 mainAddr)
+std::string util::getIslandNameASCII(u64 playerAddr)
 {
     //0x16 byte = 0xB wide-chars/uint_16
     u16 name[0xB] = { 0 };
     u16 namechar;
-    u64 IslandNameOffset = 0x18;
 
     for (u8 i = 0; i < 0xB; i++) {
-        dmntchtReadCheatProcessMemory(mainAddr + IslandNameOffset + (i * 0x2), &namechar, 0x2);
+        dmntchtReadCheatProcessMemory(playerAddr + PersonalID + 0x4 + (i * 0x2), &namechar, 0x2);
         //make sure we can use this fuck string in a path
         if (isASCII(namechar) && !isVerboten(namechar)) {
             name[i] = namechar;
@@ -70,13 +85,12 @@ TimeCalendarTime util::getDreamTime(u64 mainAddr)
 }
 
 
-IslandName util::getIslandName(u64 mainAddr)
+IslandName util::getIslandName(u64 playerAddr)
 {
     //0x16 byte = 0xB wide-chars/uint_16
     u16 name[0xB];
-    u64 IslandNameOffset = 0x18;
 
-    dmntchtReadCheatProcessMemory(mainAddr + IslandNameOffset, name, 0x16);
+    dmntchtReadCheatProcessMemory(playerAddr + PersonalID + 0x4, name, 0x16);
     IslandName ret;
     memcpy(ret.name, name, sizeof(name));
 

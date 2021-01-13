@@ -38,7 +38,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 #   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
 APP_TITLE	:=	Luna
-APP_VERSION :=	0.0.6
+APP_VERSION :=	0.0.7
 
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build

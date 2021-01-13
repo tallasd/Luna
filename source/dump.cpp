@@ -39,19 +39,6 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 		*progress = 0;
 		return;
 	}
-	u64 mainSize = 0x5061A0;
-	u64 GSavePlayerVillagerAccountOffset = 0x1E2280 - 0x110;
-	u64 GSavePlayerVillagerAccountSize = 0x48;
-	u64 playerSize = 0x36930;
-	u64 playersOffset = 0x7A8C8;
-	//taken from NHSE
-	u64 houseSize = 0x26400;
-	u64 houseOffset = 0x2E7638;
-	u64 EventFlagOffset = 0x20C40C;
-	u64 StorageSizeOffset = 0x4081C;
-	u64 Pocket2SizeOffset = 0x36B00;
-
-	s64 SaveHeaderSize = 0x110;
 
 	*progress = 20;
 	*status = "pointers optained";
@@ -96,7 +83,7 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 #endif
 
 	std::string newdumppath = "/config/luna/dump/[DA-" + util::getDreamAddrString(mainAddr) + "]";
-	std::string strislandname = util::getIslandNameASCII(mainAddr);
+	std::string strislandname = util::getIslandNameASCII(playerAddr);
 	if (!strislandname.empty()) newdumppath += " " + strislandname;
 
 	*status = "starting dump...";
@@ -170,7 +157,7 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	memset(pathBuffer, 0, FS_MAX_PATH);
 	std::snprintf(pathBuffer, FS_MAX_PATH, std::string(newdumppath + "/landname.dat").c_str());
 	u16 islandname[0xB];
-	memcpy(islandname, util::getIslandName(mainAddr).name, sizeof(islandname));
+	memcpy(islandname, util::getIslandName(playerAddr).name, sizeof(islandname));
 	//in case user doesn't submit a valid landname.dat file or the file at all
 	fsFsDeleteFile(&fsSdmc, pathBuffer);
 	fsFsCreateFile(&fsSdmc, pathBuffer, 0xB * sizeof(u16), 0);
