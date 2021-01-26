@@ -8,6 +8,9 @@ extern const u64 GSavePlayerVillagerAccountSize = 0x48;
 extern const u64 playerSize = 0x36930;
 extern const u64 playersOffset = 0x7A8C8;
 
+extern const u64 DreamIDOffset = 0x504DF0 - 0x110;
+extern const u64 DreamInfoSize = 0x50;
+
 //taken from NHSE
 extern const u64 PersonalID = 0xAFA8;
 extern const u64 houseSize = 0x26400;
@@ -64,9 +67,9 @@ std::string util::getDreamAddrString(u64 mainAddr)
 {
     u64 cDreamID = 0x0;
     char buffer[0x10] = { 0 };
-    u64 DreamIDOffs = 0x504DF0 - 0x110;
 
-    dmntchtReadCheatProcessMemory(mainAddr + DreamIDOffs, &cDreamID, sizeof(u64));
+
+    dmntchtReadCheatProcessMemory(mainAddr + DreamIDOffset, &cDreamID, sizeof(u64));
     sprintf(buffer, "%012li", cDreamID);
 
     std::string str1 = std::string(buffer).substr(0, 4);

@@ -19,6 +19,9 @@ extern const u64 GSavePlayerVillagerAccountSize;
 extern const u64 playerSize;
 extern const u64 playersOffset;
 
+extern const u64 DreamIDOffset;
+extern const u64 DreamInfoSize;
+
 //taken from NHSE
 extern const u64 PersonalID;
 extern const u64 houseSize;

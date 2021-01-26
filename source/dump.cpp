@@ -143,6 +143,11 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	//removes panel
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (364 * 2), &DreamUploadPlayerHaveCreatorID, sizeof(u16), FsWriteOption_Flush);
 
+	//remove DreamInfo in dumped file
+	//TODO: check if you can create new Dream Island from dump
+	u8 DreamInfoBuffer[DreamInfoSize] = { 0 };
+	fsFileWrite(&main, SaveHeaderSize + DreamIDOffset, DreamInfoBuffer, DreamInfoSize, FsWriteOption_Flush);
+
 
 	(*logelm)->addLine("applied fixes to main.");
 
