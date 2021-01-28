@@ -2,22 +2,26 @@
 
 extern const s64 SaveHeaderSize = 0x110;
 
-extern const u64 mainSize = 0x5061A0;
+extern const u64 mainSize = 0x504360; //changed in 1.7.0
 extern const u64 GSavePlayerVillagerAccountOffset = 0x1E2280 - 0x110;
 extern const u64 GSavePlayerVillagerAccountSize = 0x48;
-extern const u64 playerSize = 0x36930;
-extern const u64 playersOffset = 0x7A8C8;
-
-extern const u64 DreamIDOffset = 0x504DF0 - 0x110;
+extern const u64 DreamIDOffset = 0x502EA8; //changed in 1.7.0
 extern const u64 DreamInfoSize = 0x50;
 
+
+extern const u64 playerSize = 0x36930;
+extern const u64 playersOffset = 0x7A858; //changed in 1.7.0
+
 //taken from NHSE
+//*personal.dat*//
 extern const u64 PersonalID = 0xAFA8;
+extern const u64 StorageSizeOffset = 0x4081C; //absolute file offset //changed in 1.7.0
+extern const u64 Pocket2SizeOffset = 0x36B00; //absolute file offset //changed in 1.7.0
+
+//*main.dat*//
 extern const u64 houseSize = 0x26400;
-extern const u64 houseOffset = 0x2E7638;
-extern const u64 EventFlagOffset = 0x20C40C;
-extern const u64 StorageSizeOffset = 0x4081C;
-extern const u64 Pocket2SizeOffset = 0x36B00;
+extern const u64 houseLvlOffset = 0x2E5634; //changed in 1.7.0
+extern const u64 EventFlagOffset = 0x20A408; //changed in 1.7.0
 
 static const char verboten[] = { ',', '/', '\\', '<', '>', ':', '"', '|', '?', '*', '™', '©', '®' };
 
@@ -82,7 +86,7 @@ std::string util::getDreamAddrString(u64 mainAddr)
 TimeCalendarTime util::getDreamTime(u64 mainAddr)
 {
     TimeCalendarTime dreamtime;
-    u64 DreamTimeOffs = 0x504E30 - 0x110;
+    u64 DreamTimeOffs = DreamIDOffset + 0x40;
     dmntchtReadCheatProcessMemory(mainAddr + DreamTimeOffs, &dreamtime, sizeof(TimeCalendarTime));
     return dreamtime;
 }

@@ -41,7 +41,7 @@ If you like my work, please consider supporting me on Patreon, thanks!
 ## How-To
 
 1. do the thing (run make) or grab a [release](https://github.com/Ixaruz/Luna-ovl/releases/latest).
-2. put everything on the SD card and provide 1.6.0 [**DECRYPTED**](https://github.com/Ixaruz/HorizonCrypt/releases/latest) save as template.
+2. put everything on the SD card and provide 1.7.0 [**DECRYPTED**](https://github.com/Ixaruz/HorizonCrypt/releases/latest) save as template.
 3. run overlay when you're on a dream island.
 4. grab the dump from your SD card.
 5. [**ENCRYPT**](https://github.com/Ixaruz/HorizonCrypt/releases/latest) dump and fix file hashes.

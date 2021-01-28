@@ -25,16 +25,16 @@ Result rc;
 void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	*progress = 69;
 	*status = "optaining pointers...";
-	//[[[main+3C957B0]+10]+F8]+60
-	u64 mainAddr = util::FollowPointerMain(0x3C957B0, 0x10, 0xF8, 0xFFFFFFFFFFFFFFFF) + 0x60;
+	//[[[main+3D1AA60]+10]+F8]+60
+	u64 mainAddr = util::FollowPointerMain(0x3D1AA60, 0x10, 0xF8, 0xFFFFFFFFFFFFFFFF) + 0x60;
 	if (mainAddr == 0x60) {
 		*status = "Error: mainAddr";
 		*progress = 0;
 		return;
 	}
-	//[[[[main+3C957B0]+10]+108]+08]
-	u64 playerAddr = util::FollowPointerMain(0x3C957B0, 0x10, 0x108, 0x08, 0xFFFFFFFFFFFFFFFF);
-	if (playerAddr == 0x0) {
+	//[[[[main+3D1AA60]+10]+108]+08]
+	u64 playerAddr = util::FollowPointerMain(0x3D1AA60, 0x10, 0x108, 0x08, 0xFFFFFFFFFFFFFFFF);
+	if (playerAddr == 0x00) {
 		*status = "Error: playerAddr";
 		*progress = 0;
 		return;
@@ -144,7 +144,6 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (364 * 2), &DreamUploadPlayerHaveCreatorID, sizeof(u16), FsWriteOption_Flush);
 
 	//remove DreamInfo in dumped file
-	//TODO: check if you can create new Dream Island from dump
 	u8 DreamInfoBuffer[DreamInfoSize] = { 0 };
 	fsFileWrite(&main, SaveHeaderSize + DreamIDOffset, DreamInfoBuffer, DreamInfoSize, FsWriteOption_Flush);
 
@@ -234,7 +233,7 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 		u32 storageSize = 80;
 		u32 pocket2Size = 0;
 
-		dmntchtReadCheatProcessMemory(mainAddr + houseOffset + (i * houseSize), &houselvl, sizeof(u8));
+		dmntchtReadCheatProcessMemory(mainAddr + houseLvlOffset + (i * houseSize), &houselvl, sizeof(u8));
 		dmntchtReadCheatProcessMemory(mainAddr + EventFlagOffset + (59 * 2), &BuiltTownOffice, sizeof(u16));
 
 		switch (houselvl) {

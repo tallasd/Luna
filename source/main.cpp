@@ -229,21 +229,21 @@ Check Checker() {
     //dream check
     u32 dreamstrval;
     u16 IsDreamingBed = 0;
-    //[[[main+3C957B0]+10]+F8]+60
-    u64 mainAddr = util::FollowPointerMain(0x3C957B0, 0x10, 0xF8, 0xFFFFFFFFFFFFFFFF) + 0x60;
+    //[[[main+3D1AA60]+10]+F8]+60
+    u64 mainAddr = util::FollowPointerMain(0x3D1AA60, 0x10, 0xF8, 0xFFFFFFFFFFFFFFFF) + 0x60;
     dmntchtReadCheatProcessMemory(mainAddr, &dreamstrval, sizeof(u32));
     dmntchtReadCheatProcessMemory(mainAddr + EventFlagOffset + (346 * 2), &IsDreamingBed, sizeof(u16));
 
     if (isACNH) {
         if (bid != BID) {
 
-            std::snprintf(ret, 100, "BID 0x%lX", bid);
+            std::snprintf(ret, 100, "BID 0x%016lX", bid);
             const char* description = ret;
 
             warning = new tsl::elm::CustomDrawer([description](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
                 renderer->drawString("\uE150", false, 180, 250, 90, renderer->a(0xFFFF));
                 renderer->drawString("Version missmatch:", false, 110, 340, 25, renderer->a(0xFFFF));
-                renderer->drawString(description, false, 60, 375, 25, renderer->a(0xFFFF));
+                renderer->drawString(description, false, 55, 375, 25, renderer->a(0xFFFF));
                 });
 
             checkvar.check_result = CheckResult::WrongBID;

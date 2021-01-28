@@ -16,19 +16,20 @@ extern const s64 SaveHeaderSize;
 extern const u64 mainSize;
 extern const u64 GSavePlayerVillagerAccountOffset;
 extern const u64 GSavePlayerVillagerAccountSize;
-extern const u64 playerSize;
-extern const u64 playersOffset;
-
 extern const u64 DreamIDOffset;
 extern const u64 DreamInfoSize;
 
+extern const u64 playerSize;
+extern const u64 playersOffset;
+
 //taken from NHSE
 extern const u64 PersonalID;
-extern const u64 houseSize;
-extern const u64 houseOffset;
-extern const u64 EventFlagOffset;
 extern const u64 StorageSizeOffset;
 extern const u64 Pocket2SizeOffset;
+
+extern const u64 houseSize;
+extern const u64 houseLvlOffset;
+extern const u64 EventFlagOffset;
 
 struct IslandName {
     u16 name[0xB];
