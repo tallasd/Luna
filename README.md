@@ -40,7 +40,7 @@ If you like my work, please consider supporting me on Patreon, thanks!
 
 ## How-To
 
-1. do the thing (run make) or grab a [release](https://github.com/Ixaruz/Luna-ovl/releases/latest).
+1. do the thing (Building) or grab a [release](https://github.com/Ixaruz/Luna-ovl/releases/latest).
 2. put everything on the SD card and provide 1.7.0 [**DECRYPTED**](https://github.com/Ixaruz/HorizonCrypt/releases/latest) save as template.
 3. run overlay when you're on a dream island.
 4. grab the dump from your SD card.
@@ -48,6 +48,9 @@ If you like my work, please consider supporting me on Patreon, thanks!
 7. ???
 8. Profit. 
 
+## Building
+1. Requires [devkitPro](https://devkitpro.org/) and [libnx](https://github.com/switchbrew/libnx)
+2. Requires switch-freetype, zlib
 ## Known Issues
 
 - Non-ASCII island names can't be saved (e.g. Japanese/Chinese/Korean/Russian, basically every language that doesnt use the roman alphabet.)
