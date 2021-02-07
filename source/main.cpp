@@ -201,7 +201,7 @@ CheckResult CheckTemplateFiles(FsFileSystem* fs, const std::string& path) {
             fsFsOpenFile(fs, pathbuffer, FsOpenMode_Read, &check);
             fsFileRead(&check, 0, &checkDAT, 0x10, FsReadOption_None, &bytesread);
             if (checkDAT.SaveRevision != REVISION_SAVE || checkDAT.Major != REVISION_MAJOR || checkDAT.Minor != REVISION_MINOR) {
-                fatalThrow(checkDAT.Major);
+                //fatalThrow(checkDAT.Major);
                 return CheckResult::WrongRevision;
             }
         }
